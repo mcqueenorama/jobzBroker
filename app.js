@@ -68,7 +68,7 @@ app.use(app.router);
 
 app.all('/' + broker.httpd.path, function(req, res, next) {
 
-    var message = 'message ' + tnetstrings.tnetstrings.dumpObject({jobId: uuid.v1(), query: req.query, path: broker.httpd.path, headers: req.headers, body: req.text});
+    var message = req.query.job + ' ' + tnetstrings.tnetstrings.dumpObject({jobId: uuid.v1(), query: req.query, path: broker.httpd.path, headers: req.headers, body: req.text});
     console.log('tnetstrings', message);
     socket.send(message);
 
