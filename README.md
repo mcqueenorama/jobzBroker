@@ -1,11 +1,15 @@
 jobzBroker
 ==========
 
+start it like this: npm start
+
 Its similar to mongrel2.  Its http on the frontend and a publish queue on the backend (uses express and zeromq).
 
 Its meant to be used like this.  Send an http request to the thing, and some subscriber job on the backend will pick it up and do something.
 
 curl http://localhost/message?job=deployTrouncer
+
+curl -v --data-binary @/Users/bmcquee/git/PGItemSetupAcceptanceTest/target/surefire-reports/bullet_point.png http://localhost:3000/message?job=job1\&www=ddd
 
 A job elsewhere is listening for messages named 'deployTrouncer', and it unpacks the tnetstring and gets busy with its work, otherwise it just waits for a message.  Its got a great many uses.
 

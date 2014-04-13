@@ -1,20 +1,21 @@
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var logger = require('morgan');
+var express = require('express')
+var http = require('http')
+var path = require('path')
+var logger = require('morgan')
 var getRawBody = require('raw-body')
-var uuid = require('uuid');
+var uuid = require('uuid')
+var tnet = require('tnet')
 
 //http://lorenwest.github.io/node-config/latest/
-var broker = require('config').broker;
+var broker = require('config').broker
 
-var routes = require('./routes');
-var tnetstrings = require('./lib/tnetstrings');
+var routes = require('./routes')
+// var tnetstrings = require('./lib/tnetstrings');
 
 var zmq = require('zmq')
-var pubUrl = 'tcp://*:' + broker.pub.port;
-console.log('publishing to pubUrl:', pubUrl);
-console.log('http bound to port:', broker.httpd.port);
+var pubUrl = 'tcp://*:' + broker.pub.port
+console.log('publishing to pubUrl:', pubUrl)
+console.log('http bound to port:', broker.httpd.port)
 
 var socket = zmq.socket('pub');
 
@@ -52,8 +53,9 @@ app.use(function (req, res, next) {
 //get the post body raw
 app.use(function (req, res, next) {
   getRawBody(req, {
-    length: req.headers['content-length'],
-    limit: '1mb',
+    // length: req.headers['content-length'],
+    // length: defaultLimit,
+    // limit: defaultLimit
     encoding: 'utf8'
   }, function (err, string) {
     if (err)
@@ -68,11 +70,13 @@ app.use(app.router);
 
 app.all('/' + broker.httpd.path, function(req, res, next) {
 
-    var message = req.query.job + ' ' + tnetstrings.tnetstrings.dumpObject({jobId: uuid.v1(), query: req.query, path: broker.httpd.path, headers: req.headers, body: req.text});
-    console.log('tnetstrings', message);
+    // console.log({jobId: uuid.v1(), query: req.query, path: broker.httpd.path, headers: req.headers, body: req.text})
+
+    var message = req.query.job + ' ' + tnet.stringify({jobId: uuid.v1(), query: req.query, path: broker.httpd.path, headers: req.headers, body: req.text});
+    console.log('tnetstring', message.substring(0,22) + '...');
+    // console.log('tnetstring', message);
     socket.send(message);
 
-    // console.log('express', express)
     next();
 
 });
